@@ -1,0 +1,754 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indigenous Heritage | HARURUTT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #120b08;
+            --surface: rgba(255,255,255,0.08);
+            --surface-strong: rgba(255,255,255,0.14);
+            --text: #f3ece2;
+            --muted: #c9b8a6;
+            --gold: #d4af37;
+            --terra: #d16e39;
+            --forest: #2c4d34;
+            --cream: #f6eee3;
+            --shadow: 0 28px 80px rgba(0,0,0,0.35);
+            --radius: 28px;
+            --progress-bg: rgba(255,255,255,0.08);
+            --progress-thumb: rgba(212,175,55,0.95);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at top, rgba(212,175,55,0.12), transparent 28%),
+                        linear-gradient(180deg, #1a110d 0%, #140b07 100%);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 25%),
+                              repeating-linear-gradient(45deg, rgba(255,255,255,0.03), rgba(255,255,255,0.03) 1px, transparent 1px, transparent 16px);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.7;
+        }
+        .page { position: relative; z-index: 1; }
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.15rem 3rem;
+            background: rgba(10,7,5,0.28);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.4s ease, background 0.4s ease, padding 0.3s ease;
+        }
+        nav.scrolled { background: rgba(10,7,5,0.92); padding: 0.85rem 2rem; }
+        .logo { font-family: 'Cinzel', serif; letter-spacing: 0.2em; color: var(--gold); font-size: 1rem; }
+        .menu { display: flex; gap: 1.5rem; list-style: none; }
+        .nav-actions { display: flex; align-items: center; gap: 1rem; }
+        .menu a, .github-link {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            position: relative;
+        }
+        .menu a::after { content: ''; position: absolute; left: 0; bottom: -6px; width: 0; height: 2px; background: linear-gradient(90deg, var(--gold), var(--terra)); transition: width 0.25s ease; }
+        .menu a:hover::after { width: 100%; }
+        .github-link {
+            padding: 0.9rem 1.4rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.16);
+            background: rgba(255,255,255,0.06);
+            box-shadow: 0 18px 42px rgba(212,175,55,0.12);
+            transition: transform 0.35s ease, background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+        }
+        .github-link:hover {
+            transform: translateY(-3px);
+            background: rgba(212,175,55,0.16);
+            box-shadow: 0 24px 60px rgba(212,175,55,0.18);
+            border-color: rgba(212,175,55,0.35);
+        }
+        .hero {
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            align-items: center;
+            padding-top: 5rem;
+        }
+        .hero-slide,
+        .hero-overlay { position: absolute; inset: 0; }
+        .hero-slide { display: grid; grid-template-columns: repeat(3, 1fr); transform-style: preserve-3d; perspective: 1500px; }
+        .hero-slide .slide {
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center calc(50% + var(--parallax, 0px));
+            opacity: 0;
+            transform: scale(1.08);
+            transition: opacity 1.4s ease, transform 1.4s ease, background-position 1.4s ease;
+        }
+        .hero-slide .slide.active { opacity: 1; transform: scale(1); }
+        .hero-slide .slide::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(12,8,6,0.16) 0%, rgba(10,7,5,0.78) 70%);
+        }
+        .hero-overlay { z-index: 1; background: radial-gradient(circle at top, rgba(255,255,255,0.06), transparent 22%), linear-gradient(180deg, rgba(5,4,3,0.05), rgba(5,4,3,0.7)); pointer-events: none; mix-blend-mode: screen; }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            text-align: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            padding: 0.7rem 1.35rem;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 999px;
+            color: var(--gold);
+            font-size: 0.82rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 0 12px rgba(255,255,255,0.05);
+            backdrop-filter: blur(8px);
+        }
+        .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 7vw, 6rem); line-height: 0.95; letter-spacing: -0.04em; margin-bottom: 1.4rem; text-shadow: 0 30px 80px rgba(0,0,0,0.45); }
+        .hero-title span { display: block; color: #fff; }
+        .hero-copy { max-width: 720px; margin: 0 auto 2rem; font-size: 1.05rem; line-height: 1.9; color: rgba(243,236,227,0.94); }
+        .hero-actions { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
+        .hero-actions a { display: inline-flex; align-items: center; justify-content: center; padding: 1rem 2rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15); text-decoration: none; color: var(--text); font-weight: 600; background: rgba(255,255,255,0.06); transition: transform 0.35s ease, background 0.35s ease, box-shadow 0.35s ease; }
+        .hero-actions a:hover { transform: translateY(-4px); background: rgba(212,175,55,0.18); box-shadow: 0 18px 40px rgba(212,175,55,0.18); }
+        .particles { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+        .particle { position: absolute; border-radius: 50%; background: rgba(212,175,55,0.12); box-shadow: 0 0 40px rgba(212,175,55,0.22); animation: float 14s ease-in-out infinite; }
+        .particle:nth-child(1) { width: 120px; height: 120px; top: 18%; left: 10%; animation-duration: 16s; }
+        .particle:nth-child(2) { width: 60px; height: 60px; top: 30%; left: 78%; animation-duration: 12s; animation-delay: 1s; }
+        .particle:nth-child(3) { width: 90px; height: 90px; top: 65%; left: 22%; animation-duration: 18s; animation-delay: 2s; }
+        .particle:nth-child(4) { width: 45px; height: 45px; top: 55%; left: 85%; animation-duration: 10s; animation-delay: 0.5s; }
+        .particle:nth-child(5) { width: 75px; height: 75px; top: 78%; left: 55%; animation-duration: 20s; animation-delay: 3s; }
+        @keyframes float { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } }
+        .section { position: relative; padding: 6rem 3rem; }
+        .section-title { font-family: 'Cinzel', serif; font-size: clamp(2.2rem, 4vw, 3.4rem); margin-bottom: 1rem; text-align: center; color: var(--cream); }
+        .section-divider { width: 130px; height: 2px; margin: 0.75rem auto 2.5rem; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+        .section-text { max-width: 820px; margin: 0 auto; text-align: center; color: var(--muted); line-height: 1.9; margin-bottom: 1.25rem; }
+        .intro-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; }
+        .intro-copy { display: grid; gap: 1.5rem; }
+        .intro-copy h2 { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 4vw, 3.8rem); line-height: 1.02; color: #fff; }
+        .intro-copy p { font-size: 1rem; line-height: 1.9; color: rgba(243,236,227,0.92); }
+        .intro-image { position: relative; border-radius: 32px; overflow: hidden; box-shadow: var(--shadow); }
+        .intro-image img { width: 100%; height: 100%; object-fit: cover; object-position: center calc(50% + var(--parallax, 0px)); transition: object-position 0.5s ease; display: block; }
+        .intro-image::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 20%, rgba(18,12,9,0.85) 85%); }
+        .intro-tags { position: absolute; left: 1.5rem; bottom: 1.5rem; display: inline-flex; gap: 0.65rem; flex-wrap: wrap; }
+        .tag { padding: 0.65rem 1rem; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: var(--cream); font-size: 0.85rem; }
+        .history-layout { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 2rem; align-items: stretch; }
+        .history-panel { display: grid; gap: 1.5rem; }
+        .timeline-card { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 28px; padding: 2rem; backdrop-filter: blur(16px); box-shadow: var(--shadow); overflow: hidden; }
+        .timeline-card::before { content: ''; position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: linear-gradient(180deg, var(--gold), var(--terra)); }
+        .timeline-card h3 { margin-bottom: 1rem; color: var(--cream); }
+        .timeline-card p { color: rgba(243,236,227,0.9); line-height: 1.85; white-space: pre-line; overflow-wrap: anywhere; }
+        .timeline-point { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
+        .timeline-point span { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; background: rgba(212,175,55,0.18); color: var(--gold); font-weight: 700; }
+        .timeline-grid { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
+        .timeline-item { padding: 1.8rem; border-radius: 24px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); transition: transform 0.3s ease; }
+        .timeline-item:hover { transform: translateY(-6px); }
+        .timeline-item h4 { margin-bottom: 0.75rem; color: var(--gold); }
+        .timeline-item p { color: rgba(243,236,227,0.92); line-height: 1.8; }
+        .history-slider { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 1.5rem; }
+        .data-viz-card { position: relative; border-radius: 28px; overflow: hidden; min-height: 320px; display: grid; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 30px 70px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease; }
+        .data-viz-card:hover { transform: translateY(-4px); box-shadow: 0 34px 90px rgba(0,0,0,0.22); border-color: rgba(255,255,255,0.18); }
+        .data-viz-card img { width: 100%; height: 100%; object-fit: cover; object-position: center calc(50% + var(--parallax, 0px)); transition: transform 0.4s ease, filter 0.4s ease; }
+        .data-viz-card:hover img { transform: scale(1.03); filter: saturate(1.05); }
+        .data-viz-card .card-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.04), rgba(0,0,0,0.7)); display: grid; align-items: end; padding: 1.5rem; }
+        .data-viz-card .card-title { color: #fff; font-size: 1.1rem; font-weight: 700; line-height: 1.2; text-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+        .data-viz-card .card-badge { display: inline-flex; padding: 0.4rem 0.9rem; background: rgba(255,255,255,0.1); border-radius: 999px; color: #fff; font-size: 0.85rem; letter-spacing: 0.04em; margin-top: 0.75rem; }
+        .history-slide { display: none; }
+        .social-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+        .social-card { position: relative; overflow: hidden; border-radius: 28px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); backdrop-filter: blur(16px); padding: 2rem; box-shadow: var(--shadow); transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+        .social-card:hover { transform: translateY(-7px); border-color: rgba(212,175,55,0.28); box-shadow: 0 26px 70px rgba(212,175,55,0.14); }
+        .social-card h4 { margin-bottom: 1rem; color: var(--gold); }
+        .social-card p { color: rgba(243,236,227,0.9); line-height: 1.8; }
+        .social-icon { width: 58px; height: 58px; border-radius: 20px; display: grid; place-items: center; margin-bottom: 1.25rem; background: radial-gradient(circle at top left, rgba(212,175,55,0.22), rgba(255,255,255,0.05)); color: var(--gold); font-size: 1.25rem; }
+        .social-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .stat-box { padding: 2rem; border-radius: 28px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); }
+        .stat-label { color: var(--muted); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.8rem; margin-bottom: 0.75rem; }
+        .stat-number { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 5vw, 4rem); color: var(--gold); line-height: 1; }
+        .political-split { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: stretch; }
+        .political-panel { position: relative; border-radius: 32px; overflow: hidden; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); box-shadow: var(--shadow); backdrop-filter: blur(18px); }
+        .political-panel .panel-inner { padding: 2rem; }
+        .political-panel h4 { margin-bottom: 1rem; color: var(--cream); }
+        .political-panel p { color: rgba(243,236,227,0.92); line-height: 1.85; margin-bottom: 1.25rem; }
+        .process-flow { display: grid; gap: 1rem; }
+        .process-step { padding: 1.5rem; border-radius: 24px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); transition: transform 0.3s ease; }
+        .process-step:hover { transform: translateY(-4px); }
+        .process-step h5 { margin-bottom: 0.75rem; color: var(--gold); }
+        .economy-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+        .economy-card { position: relative; border-radius: 28px; overflow: hidden; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); padding: 2rem; box-shadow: var(--shadow); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .economy-card:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(212,175,55,0.14); }
+        .economy-card h4 { margin-bottom: 1rem; color: var(--gold); }
+        .economy-card p { color: rgba(243,236,227,0.9); line-height: 1.8; }
+        .economy-counters { display: grid; gap: 1rem; margin-top: 2rem; }
+        .counter { display: grid; gap: 0.65rem; padding: 1.75rem; border-radius: 26px; background: rgba(212,175,55,0.08); color: #fff; }
+        .counter span { font-size: 2rem; font-family: 'Playfair Display', serif; color: var(--gold); }
+        .counter small { color: rgba(243,236,227,0.84); }
+        .culture-gallery { display: grid; gap: 1.5rem; margin-top: 2rem; }
+        .gallery-masonry { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: minmax(260px, auto); gap: 1.5rem; }
+        .masonry-item { position: relative; border-radius: 26px; overflow: hidden; cursor: pointer; transition: transform 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease; }
+        .masonry-item:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 24px 60px rgba(0,0,0,0.18); filter: brightness(1.02); }
+        .masonry-item img { width: 100%; height: 100%; object-fit: cover; object-position: center calc(50% + var(--parallax, 0px)); transition: object-position 0.5s ease; display: block; }
+        .masonry-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(9,6,4,0.88) 100%); display: flex; align-items: flex-end; padding: 1.5rem; color: #fff; }
+        .masonry-overlay span { font-size: 1rem; font-weight: 600; }
+        .religion-section { background: radial-gradient(circle at top, rgba(212,175,55,0.06), transparent 25%), linear-gradient(180deg, #0f0a07 0%, #150f0b 100%); padding: 6rem 3rem; }
+        .religion-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+        .religion-card { position: relative; overflow: hidden; border-radius: 32px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); box-shadow: var(--shadow); padding: 2rem; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .religion-card:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(212,175,55,0.14); }
+        .religion-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top left, rgba(212,175,55,0.12), transparent 30%); pointer-events: none; }
+        .religion-card h4 { position: relative; z-index: 1; margin-bottom: 1rem; color: var(--cream); }
+        .religion-card p { position: relative; z-index: 1; line-height: 1.85; color: rgba(243,236,227,0.9); }
+        .religion-symbol { width: 58px; height: 58px; display: grid; place-items: center; border-radius: 18px; background: rgba(212,175,55,0.18); color: var(--gold); margin-bottom: 1.25rem; }
+        .issues-layout { display: grid; gap: 1.5rem; }
+        .issue-hero { position: relative; border-radius: 32px; overflow: hidden; min-height: 320px; }
+        .issue-hero img { width: 100%; height: 100%; object-fit: cover; object-position: center calc(50% + var(--parallax, 0px)); transition: object-position 0.5s ease; }
+        .issue-hero .overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,7,5,0.15), rgba(14,9,7,0.85)); display: grid; place-items: center; padding: 2rem; color: #fff; text-align: center; }
+        .issue-hero h3 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 0.9rem; }
+        .issue-hero p { max-width: 680px; line-height: 1.9; color: rgba(255,255,255,0.9); }
+        .issue-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .issue-card { padding: 2rem; border-radius: 28px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); box-shadow: var(--shadow); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .issue-card:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(212,175,55,0.14); }
+        .issue-card h4 { margin-bottom: 1rem; color: var(--gold); }
+        .issue-card p { color: rgba(243,236,227,0.9); line-height: 1.85; }
+        .callout { margin-top: 2rem; padding: 2rem 2.5rem; border-radius: 28px; background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.02)); border: 1px solid rgba(212,175,55,0.16); display: grid; gap: 1rem; box-shadow: inset 0 0 35px rgba(255,255,255,0.05); }
+        .callout h4 { color: var(--cream); }
+        .callout p { color: rgba(243,236,227,0.93); line-height: 1.85; }
+        .references { max-width: 1080px; margin: 0 auto 3rem; padding: 2.5rem 1.5rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 28px; backdrop-filter: blur(16px); box-shadow: var(--shadow); }
+        .references h2 { margin-bottom: 1rem; font-family: 'Cinzel', serif; font-size: clamp(2rem, 3vw, 2.6rem); color: var(--cream); text-align: center; }
+        .references-list { display: grid; grid-template-columns: 1fr; gap: 1rem; list-style: none; padding: 0; margin: 0; }
+        .references-list li { padding: 1rem 1.25rem; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(243,236,227,0.92); line-height: 1.7; word-break: break-word; overflow-wrap: anywhere; hyphens: auto; }
+        .references-list li strong { display: block; margin-bottom: 0.4rem; color: var(--gold); }
+        .references-list li::marker { content: none; }
+        .references-list li a { color: rgba(243,236,227,0.92); text-decoration: none; display: inline; }
+        .references-list li a:hover { color: var(--gold); text-decoration: underline; }
+        .references-note { margin-top: 1rem; text-align: center; color: var(--muted); font-size: 0.95rem; }
+        .signature { margin: 3rem auto 2rem; max-width: 780px; text-align: center; font-family: 'Playfair Display', serif; font-size: 1.45rem; color: var(--cream); letter-spacing: 0.02em; }
+        .modal { position: fixed; inset: 0; display: none; place-items: center; background: rgba(0,0,0,0.9); z-index: 1200; padding: 2rem; }
+        .modal.active { display: grid; }
+        .modal img { max-width: 100%; max-height: 100%; border-radius: 24px; box-shadow: var(--shadow); }
+        .card-detail-modal { position: fixed; inset: 0; display: none; place-items: center; background: rgba(0,0,0,0.9); z-index: 1210; padding: 2rem; }
+        .card-detail-modal.active { display: grid; }
+        .card-detail-panel { position: relative; width: min(720px, calc(100% - 3rem)); background: rgba(13,9,6,0.94); border: 1px solid rgba(255,255,255,0.16); border-radius: 32px; padding: 2.5rem; box-shadow: var(--shadow); backdrop-filter: blur(20px); }
+        .card-detail-image { width: 100%; max-height: 420px; border-radius: 24px; object-fit: cover; margin-bottom: 1.5rem; display: none; }
+        .card-detail-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 3vw, 3rem); color: #fff; margin-bottom: 1rem; }
+        .card-detail-copy { color: rgba(243,236,227,0.92); line-height: 1.9; font-size: 1rem; }
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            color: var(--text);
+            font-size: 1.1rem;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.18); }
+        .fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.8s ease, transform 0.8s ease; will-change: transform, opacity; }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+        .scroll-progress {
+            position: fixed;
+            right: 2rem;
+            top: 15%;
+            width: 6px;
+            height: 70vh;
+            background: var(--progress-bg);
+            border-radius: 999px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+            z-index: 1100;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .scroll-progress .progress-bar {
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(180deg, rgba(212,175,55,0.9), rgba(209,110,57,0.95));
+            border-radius: 999px;
+            transition: height 0.2s ease;
+        }
+        .parallax { --parallax: 0px; }
+        @media (max-width: 1100px) {
+            .intro-row, .history-layout, .political-split, .economy-grid, .social-grid, .religion-grid, .issues-layout { grid-template-columns: 1fr; }
+            .history-slider { grid-template-columns: 1fr; }
+            .gallery-masonry { grid-template-columns: repeat(6, 1fr); }
+            .gallery-masonry .masonry-item { grid-column: auto !important; grid-row: auto !important; }
+            .scroll-progress { display: none; }
+        }
+        @media (max-width: 820px) {
+            nav { padding: 0.9rem 1.4rem; }
+            .menu { gap: 1rem; }
+            .section { padding: 4.5rem 1.6rem; }
+            .hero-title { font-size: 3.4rem; }
+            .hero-actions { flex-direction: column; }
+            .gallery-masonry { grid-template-columns: repeat(4, 1fr); }
+            .gallery-masonry .masonry-item { grid-column: auto !important; grid-row: auto !important; }
+        }
+        @media (max-width: 600px) {
+            .menu { display: none; }
+            .nav-actions { margin-left: auto; }
+            .hero { padding-top: 4.5rem; }
+            .hero-title { font-size: 2.8rem; }
+            .intro-row, .history-layout, .political-split, .economy-grid, .social-grid, .religion-grid, .issues-layout { grid-template-columns: 1fr; }
+            .gallery-masonry { grid-template-columns: repeat(2, 1fr); }
+            .gallery-masonry .masonry-item { grid-column: auto !important; grid-row: auto !important; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .scroll-progress { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <nav id="navbar">
+            <div class="logo">@Rabacal,Chzarleth joy A. BSFT-2A</div>
+            <ul class="menu">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#history">History</a></li>
+                <li><a href="#social">Social</a></li>
+                <li><a href="#political">Political</a></li>
+                <li><a href="#economic">Economic</a></li>
+                <li><a href="#culture">Culture</a></li>
+                <li><a href="#religion">Religion</a></li>
+                <li><a href="#issues">Issues</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a class="github-link" href="https://github.com/your-repo" target="_blank" rel="noopener">View full website</a>
+            </div>
+        </nav>
+
+        <section class="hero" id="hero">
+            <div class="hero-slide">
+                <div class="slide active parallax" style="background-image: url('images/hero1.jpg');"></div>
+                <div class="slide parallax" style="background-image: url('images/hero2.jpg');"></div>
+                <div class="slide parallax" style="background-image: url('images/hero3.jpg');"></div>
+                <div class="slide parallax" style="background-image: url('images/hero4.jpg');"></div>
+            </div>
+            <div class="hero-overlay"></div>
+            <div class="particles">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+            <div class="hero-content fade-up visible">
+                <div class="hero-badge">Cinematic Indigenous Heritage</div>
+                <h1 class="hero-title"><span>Life Among Hanunuo Mangyan</span></h1>
+                <p class="hero-copy">An immersive digital museum of Indigenous culture where ancestral stories, ceremonial art, and modern resilience blend into a cinematic, glowing experience.</p>
+                <div class="hero-actions">
+                    <a href="#history">Explore Heritage</a>
+                    <a href="#intro">Learn More</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="intro" class="section">
+            <div class="intro-row">
+                <div class="intro-copy fade-up">
+                    <h2>Introduction</h2>
+                    <p>The Hanunuo Mangyan are one of the eight indigenous Mangyan groups living in the island of Mindoro. Known for their rich cultural heritage, they are recognized for preserving traditional practices, language, and writing systems despite the influence of modernization. The Hanunuo Mangyans mainly reside in the southern part of Mindoro, where they depend on agriculture, weaving, and forest resources for their livelihood. Their way of life reflects a deep connection with nature, emphasizing simplicity, cooperation, and respect for the environment.</p>
+                    <p>One of the most remarkable aspects of the Hanunuo Mangyan culture is their ancient script called Surat Mangyan, a traditional writing system used for poetry, songs, and communication. They are also known for their practices in agroforestry, particularly kaingin or swidden farming, which has long been part of their sustainable living. Through their customs, beliefs, and indigenous knowledge, the Hanunuo Mangyans continue to contribute to the cultural diversity and history of the Philippines.</p>
+                   </div>
+                <div class="intro-image fade-up parallax">
+                    <img src="images/intro1.jpg" alt="Indigenous collage">
+                    <div class="intro-tags">
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="history" class="section">
+            <div class="section-title">History</div>
+            <div class="section-divider"></div>
+            <p class="section-text">A luminous timeline of origin, migration, resistance, and the evolving demography that defines Indigenous history.</p>
+            <div class="history-layout">
+                <div class="history-panel">
+                    <div class="timeline-card fade-up">
+                        <div class="timeline-point"><span>01</span><div><h4>Origin</h4><p>Mangyan people The name “Mangyan” refers to a certain group or groups of ethnic Filipinos, who are predominantly inhabiting the interior areas of the Island of Mindoro.Various reports, however, indicate them to have been present in Tablas, Romblon and Sibuyan Islands, east of Mindoro, as well as in Palawan, Negros and Albay.
+                            Among the Mangyans of Mindoro themselves, the name Mangyan, like among the Alangan or Iraya, simply means: man, woman, person, or human being, without reference to any tribe or nation. As to Mangyan as a tribal name, this is claimed specifically by the ethnic group in Mansalay and Bulalacao municipalities. And if they want to stress the point, they might say: “Kami hanunuo Mangyan,” or in Tagalog: “Kami’y tutuong Mangyan,” because “hanunuo,” from the root word “tuo,” is an adjective meaning: true, real. To call these Mangyan just “Hanunuo,” would not make sense to them without adding a substantive.</p></div></div>
+                        <div class="timeline-point"><span>02</span><div><h4>Migrations</h4><p>Inland Retreat: Originally coastal dwellers, the Hanunuo migrated inland to the mountains to avoid the influx of Spanish settlers, religious conversion, and Moro slave raids.
+                            Modern Pressures: More recently, they have faced displacement from ancestral domains due to land grabbing, deforestation, and private pasture leases.
+                            Labor Migration: In recent decades, younger Hanunuo members have increasingly migrated out of their communities to lowlands for work, a shift that threatens close-knit kinship ties and traditional subsistence farming.</p></div></div>
+                        <div class="timeline-point"><span>03</span><div><h4>Colonization & Resistance</h4><p>The Hanunuo are one of the Indigenous Mangyan groups of Mindoro in the Philippines. Before colonization, they lived in coastal and lowland areas where they practiced farming, trade, hunting, and maintained their own culture and writing system called Surat Mangyan.
+                            During the Spanish colonization in the 16th century, many Mangyan groups, including the Hanunuo, resisted foreign control, forced Christianization, and settlement expansion. Instead of fully submitting to colonial rule, they moved deeper into the mountains and forest interiors of Mindoro to protect their traditions, land, and identity.</p></div></div>
+                        <div class="timeline-point"><span>04</span><div><h4>Demography</h4><p>Originally coastal dwellers, the Hanunuo migrated inland to the mountains to avoid the influx of Spanish settlers, religious conversion, and Moro slave raids. More recently, they have faced displacement from ancestral domains due to land grabbing, deforestation, and private pasture leases. In recent decades, younger Hanunuo members have increasingly migrated out of their communities to lowlands for work, a shift that threatens close-knit kinship ties and traditional subsistence farming.</p></div></div>
+                    </div>
+                </div>
+                <div class="history-panel fade-up">
+                    <div class="history-slider">
+                        <div class="data-viz-card" data-title="Origin" data-copy="View the geographic layout of Oriental Mindoro and its cultural regions in this map-style card">
+                            <img src="images/origin.jpg" alt="Top 10 Ethnicities in Oriental Mindoro">
+                            <div class="card-overlay"><div class="card-title">Map in Oriental Mindoro</div></div>
+                        </div>
+                        <div class="data-viz-card" data-title="Population" data-copy="Explore the distribution of key ethnic groups in Oriental Mindoro through this visual highlight.">
+                            <img src="images/demography.jpg" alt="Map of Oriental Mindoro">
+                            <div class="card-overlay"><div class="card-title">Population Distribution in Oriental Mindoro</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="reflection" class="section">
+            <div class="section-title">Reflection</div>
+            <div class="section-divider"></div>
+            <p class="section-text">The history of the Hanunuo Mangyan reflects a long journey of resilience, identity, and adaptation shaped by both their environment and outside influences. From their early existence in coastal and lowland areas, they gradually migrated into the mountainous interior of Mindoro as a way to protect their culture, traditions, and way of life from colonization, religious conversion, and external control. This movement was not just physical relocation but also a cultural effort to preserve their language, beliefs, and their ancient writing system despite constant pressures from outside forces.
+
+Over time, their history became closely tied to resistance and survival. During the Spanish colonization, the Hanunuo chose to retreat further into the forests rather than fully submit to foreign rule, allowing them to safeguard their customs and identity. Even in more recent times, they continue to face challenges such as land grabbing, deforestation, and loss of ancestral domains, which affect their traditional way of life and connection to the land.
+
+Today, their demographic situation is also changing, as younger members increasingly migrate to lowland areas in search of work, which weakens traditional kinship ties and subsistence farming practices. Despite these struggles, the Hanunuo Mangyan remain resilient, continuing to preserve their cultural heritage while adapting to modern pressures, showing that their history is not only one of survival but also of enduring strength and continuity.</p>
+        </section>
+
+        <section id="social" class="section">
+            <div class="section-title">Social</div>
+            <div class="section-divider"></div>
+            <p class="section-text">Social structure, identity, and environmental guardianship are central to Indigenous life and modern challenges.</p>
+            <div class="social-grid">
+                <div class="social-card fade-up"><div class="social-icon">🌱</div><h4>Relationship to Land</h4><p>The relationship between the Hanunóo Mangyan people and their land is profound, spiritually rooted, and holistic. For the Hanunóo, land is life. It goes far beyond a physical location; it is the cornerstone of their cultural identity, sustenance, and generational survival. The Hanunóo, based primarily in the mountains of southern Mindoro, rely on a highly specialized, sustainable form of swidden agriculture (locally called kaingin). Rather than destroying the forest, they skillfully rotate crops and practice fallow periods, ensuring the land remains fertile.</p></div>
+                <div class="social-card fade-up"><div class="social-icon">🌀</div><h4>Social Identity</h4><p>The relationship between the Hanunóo Mangyan people and their land is profound, spiritually rooted, and holistic. For the Hanunóo, land is life. It goes far beyond a physical location; it is the cornerstone of their cultural identity, sustenance, and generational survival. The Hanunóo, based primarily in the mountains of southern Mindoro, rely on a highly specialized, sustainable form of swidden agriculture (locally called kaingin). Rather than destroying the forest, they skillfully rotate crops and practice fallow periods, ensuring the land remains fertile.</p></div>
+                <div class="social-card fade-up"><div class="social-icon">🌿</div><h4>Environmental Preservation</h4><p>The Hanunuo Mangyans practice three main agroforestry systems: swidden or kaingin farming, multistorey farming, and home gardens. Among these, kaingin farming is the most commonly practiced and plays an important role in supporting their livelihood and environment. Traditional farming practices and sustainability were examined through soil analyses, interviews, and other methods. Kaingin farms are commonly planted with rice, corn, banana, cassava, ube, and kadios, creating a multiple cropping system that provides different food sources. Farmers also allow the land to rest for one to three years before planting again. These practices help the Hanunuo Mangyans maintain their food supply while preserving their traditional agricultural knowledge.</p></div>
+                <div class="social-card fade-up"><div class="social-icon">⚖️</div><h4>Social Structure</h4><p>The Hanunuo (or Hanunó'o) are an indigenous Mangyan people from Mindoro Island, Philippines, renowned for preserving their pre-colonial syllabic script and traditional poetry. Their society is egalitarian and kinship-based, functioning without strict hierarchical leadership. Instead of rigid laws, social order and conflict resolution are guided by community consensus and the wisdom of village elders.</p></div>
+                <div class="social-card fade-up"><div class="social-icon">🛡️</div><h4>Modern Issues</h4><p>As generations continue to change, the Hanunuo Mangyan community has also experienced the effects of modernization in many parts of daily life. Hanunuo millennials today are more exposed to technology, social media, and modern lifestyles compared to the older generation. Changes can be seen in the way they communicate, their views on marriage, and even their political beliefs. While these modern influences continue to shape the younger generation, the values and traditions taught by their elders still remain an important part of their identity. Even with the fast-changing world, many Hanunuo millennials continue to protect and preserve their culture. Younger members of the community are still being taught their traditions, language, and customs through local learning centers and community guidance. Modern technology may have introduced a new way of living, but it has not completely erased their cultural roots. Instead, many Hanunuo people continue to balance tradition and modernization, showing that cultural identity can still survive and grow in today’s modern society.</p></div>
+            </div>
+        </section>
+
+        <section id="social-reflection" class="section">
+            <div class="section-title">Social Reflection</div>
+            <div class="section-divider"></div>
+            <p class="section-text">The social life of the Hanunuo Mangyan shows a deep and meaningful connection between people, land, and identity. Their way of life is strongly rooted in the belief that land is not just a resource but the foundation of their survival, culture, and spiritual well-being. Through their traditional swidden farming practices, they show how knowledge of the environment is passed down through generations while still maintaining balance with nature. This relationship highlights how their identity is closely shaped by their environment and how their everyday life reflects respect, cooperation, and sustainability.
+
+At the same time, their social structure reflects equality and strong community bonds, where decisions are often guided by elders and shared understanding rather than strict authority. Their culture also shows resilience in the face of modern challenges, as younger generations experience changes brought by technology, education, and outside influences. Despite this, many still continue to value and preserve their traditions, language, and customs, showing a strong effort to balance modern life with cultural heritage. This reflects a community that is adapting to change while still holding on to its roots and identity.</p>
+        </section>
+
+        <section id="political" class="section">
+            <div class="section-title">Political</div>
+            <div class="section-divider"></div>
+            <p class="section-text">Political systems blend customary law, administration, and modern governance to honor sovereignty and cultural rights.</p>
+            <div class="political-split">
+                <div class="political-panel fade-up">
+                    <div class="panel-inner">
+                        <h4>Political Systems</h4>
+                        <p>The Hanunoo Mangyan community is known for having a peaceful and equal society. They do not have chiefs, servants, or formally recognized rulers. Instead, members of the community treat one another with respect and equality. One important figure in their society is the panudlakan, a spiritual leader who performs special tasks and guides the community in cultural and religious practices.
+                            Peace and order are maintained through understanding and cooperation among community members. The Hanunoo Mangyan people are generally peaceful, and conflicts are usually settled through discussions led by elders. Their goal is to achieve reconciliation between both sides instead of punishment. Small fines may also be given, which are accepted and understood within their traditional customs.</p>
+                        <h4>Administration</h4>
+                        <p>The Hanunuo Mangyan have a simple and community-based political administration rooted in their traditional customs and kinship system. Their society does not follow a strict hierarchical form of government like modern political systems. Instead, leadership is usually informal, with respected elders and community leaders guiding decision-making, settling conflicts, and maintaining peace within the group. These elders are valued for their wisdom, experience, and knowledge of traditions. Decisions in the community are often made through discussion and mutual agreement rather than through formal laws or authority.</p>
+                        <h4>Rules & Regulations</h4>
+                        <p>The Hanunuo Mangyan people of southern Mindoro follow unwritten customs and traditions instead of written laws. Their society is guided by cooperation, respect, and moral values passed down by elders through generations. Community practices help regulate justice, marriage, sharing, and the peaceful settlement of conflicts. One important traditional practice is the kasaba, a form of trial by ordeal used for serious accusations such as theft or adultery, where a suspect may place their hand in boiling water to prove innocence or guilt. If found guilty, the person may be asked to pay fines or prepare a communal feast as a way of restoring peace and harmony within the community.</p>
+                    </div>
+                </div>
+                <div class="political-panel fade-up">
+                    <div class="panel-inner">
+                        <h4>Customary Law</h4>
+                        <p>The Hanunuo Mangyans follow customary laws based on tradition, respect, and community values. These laws are not written formally but are passed down through generations and guide behavior, conflict resolution, marriage, land use, and relationships within the community. Elders play an important role in interpreting these customs and helping settle disputes through discussion, advice, and mutual agreement rather than punishment. Their customary laws focus more on restoring harmony and maintaining peaceful relationships among families and clans.
+                            In the modern era, a political system is evident among the Hanunuo Mangyans through the influence of the Philippine government and local governance structures. Many communities now interact with barangay officials, local government units, and Indigenous Peoples organizations recognized under the National Commission on Indigenous Peoples. Some Hanunuo leaders also represent their communities in consultations, ancestral land concerns, and development programs. Even with these modern political influences, traditional leadership and customary laws still remain important in guiding community life and preserving their cultural identity.</p>
+                        <div class="process-flow">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="political-reflection" class="section">
+            <div class="section-title">Political Reflection</div>
+            <div class="section-divider"></div>
+            <p class="section-text">The political life of the Hanunuo Mangyan is rooted in equality, cooperation, and respect, where there are no formal rulers, chiefs, or rigid hierarchies, and leadership is instead guided by respected elders and spiritual figures like the panudlakan who help maintain cultural and religious practices. Community decisions are generally made through open discussion and mutual agreement, and conflicts are resolved peacefully through dialogue rather than punishment, often with reconciliation as the main goal. Their political system is simple but effective, focusing on maintaining harmony within the community rather than exercising authority or control.
+
+Their administration and rules are based on customary laws that are not written but passed down through generations, shaping behavior, relationships, marriage, land use, and conflict resolution. Elders play a key role in interpreting these traditions and ensuring that peace is maintained, sometimes using practices like kasaba, a traditional trial by ordeal used for serious accusations, followed by fines or communal acts to restore balance. In modern times, they also interact with the Philippine government, barangay officials, and Indigenous organizations, which has introduced new forms of governance and representation. Despite these external influences, their customary laws and traditional leadership remain central in preserving their identity and guiding their way of life.</p>
+        </section>
+
+        <section id="economic" class="section">
+            <div class="section-title">Economic</div>
+            <div class="section-divider"></div>
+            <p class="section-text">An economic landscape shaped by ancestral land, trade, craftsmanship, and the exchange of ideas.</p>
+            <div class="economy-grid">
+                <div class="economy-card fade-up"><h4>Source of Living</h4><p>The Hanunuo Mangyan people traditionally practice swidden (slash-and-burn) agriculture, cultivating upland rice, corn, sweet potatoes, taro, and other root crops as their main source of food. They also supplement their livelihood through foraging, hunting, and raising livestock, while some communities engage in small-scale trade by selling surplus crops and forest products such as bananas and ginger to lowlanders. In recent times, many farmers have started using commercial fertilizers and attending government-led agricultural seminars, where they learn modern farming techniques. Despite these changes, they continue to maintain their traditional planting practices alongside newer methods to improve harvests.
+                    In fishing communities, Hanunuo Mangyans who live near coastal areas traditionally used simple tools like spears and bows and arrows, but today many have shifted to using boats, including motorized ones, often influenced by neighboring Bisayan and Tagalog communities.
+                    Hunting, once more common in forested areas, has become less frequent due to the decline of wildlife and environmental protection laws such as the Wildlife Resources Conservation and Protection Act. Overall, while modernization and outside influences have introduced new tools and practices in farming, fishing, and hunting, the Hanunuo Mangyans continue to balance these changes with their traditional way of life.</p></div>
+                <div class="economy-card fade-up"><h4>Trade</h4><p>The Hanunuo Mangyan are animists who believe that nature such as mountains, rivers, and rocks are inhabited by guardian spirits called "kalag". Their agricultural is deeply connected to spiritual practices, and rituals like the "bugkos" rice ceremony are performed during planting and harvest seasons, accompanied by prayers and offerings to maintain harmony between people, nature, and the spirit world.
+                    Their communities are traditionally located in the mountainous uplands of southern Mindoro, where they established their ancestral settlements long before modern land classification systems. These areas are part of their ancestral domain, where land is collectively shared and used based on customary practices rather than formal ownership titles or strict land divisions. However, today their connection to these ancestral lands faces challenges from modern development, land grabbing, and climate change. While state policies often classify these areas as public land, indigenous advocacy groups continue working to secure land rights and protect their ancestral domain through sustainable and culturally respectful stewardship.</p></div>
+                <div class="economy-card fade-up"><h4>Goods & Services</h4><p>Among the Hanunuo Mangyan, trade in goods and services is mostly local and based on basic needs. They exchange surplus agricultural products such as upland rice, root crops, bananas, and ginger with lowland communities. In return, they receive essential goods like clothing, tools, and other household items that are not commonly produced within their mountainous settlements. This simple trading system helps them support their daily livelihood while maintaining their subsistence way of life.
+                   In terms of wider economic interaction, the Hanunuo Mangyan have limited participation in larger or international trade, but they are indirectly connected through lowland markets where their products are sold. Their economy remains largely traditional and community-based, focusing on self-sufficiency rather than large-scale commercial exchange. However, growing contact with nearby towns has gradually introduced them to broader market systems, influencing how they produce and sell their goods.</p></div>
+                <div class="economy-card fade-up"><h4>Technology & Ideas</h4><p>Among the Hanunuo Mangyan, the transfer of technology and ideas happens mainly through interaction with elders, neighboring communities, and exposure to lowland Filipino society. Traditionally, knowledge such as farming methods, weaving, writing scripts, and cultural practices is passed down orally and through observation. Elders play a key role in teaching younger generations, ensuring that traditional skills and values are preserved.
+                    In recent times, new technologies and ideas have also been introduced through contact with government programs, education, and neighboring groups. These include modern farming techniques, tools, communication devices, and basic livelihood innovations. While these changes improve efficiency and access to resources, the Hanunuo Mangyan continue to balance modernization with the preservation of their traditional knowledge and cultural identity.</p></div>
+            </div>
+            </div>
+        </section>
+
+        <section id="economic-reflection" class="section">
+            <div class="section-title">Economic Reflection</div>
+            <div class="section-divider"></div>
+            <p class="section-text">The economic life of the Hanunuo Mangyan is deeply rooted in their connection to ancestral land and traditional practices, where swidden agriculture remains their main source of livelihood. They grow upland rice, root crops, corn, and other plants for daily consumption, while also supplementing their needs through foraging, hunting, livestock raising, and small-scale trade with lowland communities. This way of life reflects their strong value on self-sufficiency and balance with nature, as they continue to rely on both traditional methods and gradually introduced modern farming techniques to sustain their needs.
+
+At the same time, their economic system extends beyond farming through simple trade and exchange of goods, where surplus produce is swapped for essential items like clothing, tools, and household materials that are not available in their mountainous areas. Although their participation in wider or international markets is limited, increasing contact with nearby towns has slowly influenced their economic activities. Alongside this, the transfer of knowledge and ideas—especially in farming, weaving, and cultural practices—remains strong, as elders continue to teach younger generations while also adapting to new technologies and external influences. This shows how their economy is both traditional and adaptive, balancing preservation with gradual change.</p>
+        </section>
+
+        <section id="culture" class="section">
+            <div class="section-title">Culture</div>
+            <div class="section-divider"></div>
+            <p class="section-text">Art, ceremony, clothing, literature and celebration converge in a gallery of Indigenous cultural expression.</p>
+            <div class="culture-gallery">
+                <div class="gallery-masonry">
+                    <div class="masonry-item fade-up parallax" data-src="images/culture1.jpg" data-video="https://youtu.be/ffioROeCidY" data-title="Music & Dance" data-copy="Traditional dance is a living expression of ceremony, story, and community energy." style="grid-column: span 5; grid-row: span 2;"><img src="images/culture1.jpg" alt="Traditional dance"><div class="masonry-overlay"><span>Music & Dance</span></div></div>
+                    <div class="masonry-item fade-up parallax" data-src="images/culture2.1.jpg" data-title="Arts & Crafts" data-copy="Handcrafted art carries symbols, technique, and the creative spirit of Indigenous communities." style="grid-column: span 4; grid-row: span 1;"><img src="images/culture2.jpg" alt="Arts & crafts"><div class="masonry-overlay"><span>Arts</span></div></div>
+                    <div class="masonry-item fade-up parallax" data-src="images/culture3.1.jpg" data-title="Traditional Clothing" data-copy="Traditional clothing demonstrates cultural identity, material mastery, and ancestral meaning in every pattern." style="grid-column: span 3; grid-row: span 1;"><img src="images/culture3.jpg" alt="Traditional clothes"><div class="masonry-overlay"><span>Clothes</span></div></div>
+                    <div class="masonry-item fade-up parallax" data-src="images/culture4.jpg" data-video="https://youtu.be/-yqKmFz-8CM?si=ijJcuO1gOodtwbie" data-title="Wedding Ceremony" data-copy="Wedding ceremonies honor ancestral bonds, social unity, and the passage of life within community tradition." style="grid-column: span 4; grid-row: span 2;"><img src="images/culture4.jpg" alt="Wedding ceremony"><div class="masonry-overlay"><span>Wedding Ceremony</span></div></div>
+                    <div class="masonry-item fade-up parallax" data-src="images/culture5.jpg" data-title="Festival Celebration" data-copy="Festivals bring communities together through song, dance, rituals, and the joy of shared heritage." style="grid-column: span 5; grid-row: span 1;"><img src="images/culture5.jpg" alt="Festival celebration"><div class="masonry-overlay"><span>Fiesta</span></div></div>
+                    <div class="masonry-item fade-up parallax" data-src="images/culture6.jpg" data-title="Literature" data-copy="Traditional literature preserves oral histories, myths, and the collective wisdom of Indigenous peoples." style="grid-column: span 4; grid-row: span 1;"><img src="images/culture6.1.jpg" alt="Literature"><div class="masonry-overlay"><span>Literature</span></div></div>
+                    <div class="masonry-item fade-up parallax" data-src="images/culture8.jpg" data-video="https://youtu.be/1ZukdjnSvmM?si=qvY65SHXag71kvxi" data-title="Burial" data-copy="Ceremonial art expresses sacred meaning, symbol, and community values through form and ritual." style="grid-column: span 4; grid-row: span 1;"><img src="images/culture8.jpg" alt="Burial"><div class="masonry-overlay"><span>Burial</span></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="culture-reflection" class="section">
+            <div class="section-title">Cultural Reflection</div>
+            <div class="section-divider"></div>
+            <p class="section-text">The culture of the Hanunuo Mangyan reflects a rich and deeply rooted expression of identity, creativity, and tradition that is passed down through generations. Their cultural life is seen in many forms such as music, dance, crafts, clothing, ceremonies, and literature, all of which carry meanings connected to their beliefs, history, and daily experiences. Each artistic expression is not only for beauty or celebration but also serves as a way of preserving stories, values, and the collective memory of the community, making culture an important part of their survival and identity.
+
+At the center of their culture is a strong sense of community, where traditions like weddings, festivals, and rituals bring people together and strengthen social bonds. Their traditional clothing and handmade crafts also reflect their connection to nature and ancestral knowledge, while their literature preserves oral history, myths, and wisdom that guide their way of life. Even burial practices and ceremonial expressions show respect for life, death, and the spiritual world, emphasizing harmony and continuity between generations. Overall, their culture is a living system that continues to evolve while preserving the essence of their Indigenous identity.</p>
+        </section>
+
+        <section id="religion" class="religion-section">
+            <div class="section-title">Religion</div>
+            <div class="section-divider"></div>
+            <p class="section-text">Spiritual wisdom, ritual cadence, and sacred belief come together in atmospheric form.</p>
+            <div class="religion-grid">
+                <div class="religion-card fade-up"><div class="religion-symbol">✦</div><h4>Ritual Practices</h4><p>The tribe continues to practice its traditional rituals, including the “bugkos” ritual, where rice plants are tied to a stone, buried near the root area, and covered with soil while the community offers prayers together. This ritual, which has been passed down through generations, is believed to help increase the harvest yield. For the tribe, sustainable organic farming is mainly practiced to provide food for their families and community rather than for profit. Most of their produce is consumed within the community, but when there is surplus harvest, it is shared with other members of the tribe who are in need.</p></div>
+                <div class="religion-card fade-up"><div class="religion-symbol">☾</div><h4>Doctrines</h4><p>Doctrines arise from cosmology, land-connected teachings, and values that guide daily lifeThe Hanunuo Mangyan do not have a written Bible or formal sacred text like other major religions because their beliefs and doctrines are preserved through oral traditions, rituals, stories, chants, and ambahan poetry passed down from generation to generation. Their spiritual teachings center on animism, or the belief that spirits inhabit nature such as trees, rivers, rocks, animals, and forests, and they emphasize the importance of living peacefully and harmoniously with the environment. They also believe in a Supreme Creator called Mahal na Makaako, who created and sustains the world. Their doctrines promote community cooperation, honesty, sharing resources, avoiding greed, respecting elders and ancestors, and preserving traditional rituals and practices, including ceremonies performed for protection, healing, and successful harvests.</p></div>
+                <div class="religion-card fade-up"><div class="religion-symbol">⟡</div><h4>Philosophical Beliefs</h4><p>The Hanunuo Mangyan organize their lives around the principles of peace, harmony, and respectful interconnectedness with nature. Their philosophical and spiritual worldview is deeply influenced by animism, oral traditions such as ambahan poetry, and a strong reliance on subsistence living. They believe that the universe is inhabited by spirits, known as kalag, which exist in plants, rocks, forests, and other elements of nature, requiring humans to live in harmony with these forces. The Hanunuo also venerate a Supreme Creator called Mahal na Makaako, who is believed to have created all things and continues to watch over and sustain the world. Their social philosophy emphasizes respectful reciprocity, encouraging a way of life free from greed and excess while promoting cooperation, honesty, and hospitality within the community.</p></div>
+                <div class="religion-card fade-up"><div class="religion-symbol">🌙</div><h4>Gods & Goddesses</h4><p>The Hanunuo Mangyan practice animism and believe in a complex spiritual system made up of nature spirits, ancestor spirits (kalag), and a Supreme Being, with their beliefs closely tied to daily agricultural life rather than a large pantheon. At the center of their spirituality is Mahal na Makaako, the Supreme Being and creator who is believed to have given life to humans simply by looking at them. They also honor Binayi, the sacred guardian of the garden where spirits rest, who is strongly associated with agriculture and rice production, where upsetting her is believed to cause poor harvests. Another important figure is Binayo, a female spirit who cares for the rice spirits (kalag paray) and must be respected and appeased through rituals during planting and harvest seasons. In their mythology, Bulungabon is a powerful spirit accompanied by twelve fierce dogs that chase erring or sinful souls, reflecting their belief in spiritual consequences for human actions.</p></div>
+                <div class="religion-card fade-up"><div class="religion-symbol">✶</div><h4>Religious Behavior</h4><p>The Hanunuo Mangyan believe that everything in nature—plants, animals, rocks, and even objects—has a spirit, and this shapes the way they live every day, from farming and health to their ideas about right and wrong. At the center of their belief is Mahal na Makaako, the Supreme Being who is said to have created humans just by looking at them. They also believe in kalag, or guardian spirits that look after nature and people, which is why they follow certain rules, avoid breaking taboos, and give offerings like food or beads to show respect. On the other hand, they also believe in labang, harmful spirits that can bring sickness or bad luck if the natural and spiritual balance is disturbed. Because of this, they try to live carefully and respectfully with nature, believing that harmony with the spirit world keeps their lives safe and peaceful.</p></div>
+                <div class="religion-card fade-up"><div class="religion-symbol">⚡</div><h4>Consequential Beliefs</h4><p>The Hanunuo Mangyan are known for having a rich and highly developed cultural tradition, most notably their own ancient pre-Hispanic writing system, which they share with the Buhid-Mangyan and the Tagbanua of Palawan, making them one of the few groups in the Philippines that still preserve it. Alongside this writing system, they possess a wide body of literature that includes poems, folktales, proverbs, and songs that have been passed down since time immemorial. A central part of this literary tradition is their poetry, which reflects their values, beliefs, and daily life, and is often composed and preserved through generations. This strong tradition of writing and oral literature highlights the depth of their cultural heritage and the importance they place on preserving knowledge, identity, and expression through both script and spoken art.</p></div>
+            </div>
+        </section>
+
+        <section id="religion-reflection" class="section">
+            <div class="section-title">Religious Reflection</div>
+            <div class="section-divider"></div>
+            <p class="section-text">The spiritual life of the Hanunuo Mangyan is deeply rooted in a worldview that connects nature, community, and the spirit world as one continuous system of meaning. Their rituals, such as the “bugkos,” reflect how everyday activities like farming are not only practical but also sacred, as they are performed with prayers and collective participation to ensure harmony and good harvests. Instead of relying on written scriptures, their doctrines are preserved through oral traditions, ambahan poetry, and cultural practices that emphasize respect for nature, cooperation, and balance in life.
+
+Their beliefs also show a strong philosophical foundation centered on animism and the presence of spirits (kalag) in all elements of nature, along with faith in a Supreme Creator, Mahal na Makaako, who is believed to sustain life. These beliefs guide their behavior, encouraging respectful living, avoidance of greed, and maintaining harmony with both the environment and the spiritual world. Their mythology, which includes figures like Binayi, Binayo, and Bulungabon, reflects how they understand moral consequences through spiritual balance rather than formal punishment systems. Overall, their religion is not just a set of beliefs but a way of life that shapes how they think, act, and relate to the world around them.</p>
+        </section>
+
+        <section id="issues" class="section">
+            <div class="section-title">Issues</div>
+            <div class="section-divider"></div>
+            <p class="section-text">Awareness, education, health and rights are vital priorities for Indigenous communities today.</p>
+            <div class="issue-hero fade-up parallax">
+            <div class="issue-cards">
+                <div class="issue-card fade-up"><h4>Education</h4><p>The Hanunuo Mangyan are one of the indigenous groups living in the mountainous areas of Mindoro. Despite their rich culture and traditions, many Hanunuo Mangyan children face difficulties in accessing quality education. Schools are often far from their communities, making transportation challenging and expensive. Poverty also limits their ability to buy school supplies and continue studying. In addition, some students experience discrimination and language barriers because lessons are usually taught in Filipino or English instead of their native language.
+                    To address these challenges, programs promoting culture-based education and Mother Tongue-Based Multilingual Education have been introduced to help preserve Hanunuo Mangyan identity while improving learning opportunities. Some schools and organizations also teach Surat Mangyan and traditional ambahan poetry to keep their culture alive. Education plays an important role in empowering the Hanunuo Mangyan community, helping younger generations gain knowledge and opportunities while still valuing and preserving their indigenous heritage.</p></div>
+                <div class="issue-card fade-up"><h4>Health</h4><p>Previous Mangyan studies have shown that they have poor health, are generally malnourished and continually susceptible to communicable diseases. The need to develop viable strategies to counter their health problems is pressing since Mindoro suffers from insufficient health care facilities and personnel, and health services are rarely available to Mangyans. Baseline surveys on the health and nutritional status of the Hanunuo population in the project site indicated that the following illnesses are most prevalent: upper respiratory tract infection, skin diseases, parasitism, anaemia and malaria. The more significant health problems of the Hanunuo include poor environmental sanitation, lack of medical personnel and drugs, inadequate knowledge of curative and preventive care, lack of adequate prenatal care, poor nutritional status and lack of health education. Also described are the participation of the community in project planning and decision making, the training workshops and resource manual for the community volunteers, the coverage areas and assigned tasks of the health workers, and the organisation of village health committees.</p></div>
+                <div class="issue-card fade-up"><h4>Poverty & Livelihood</h4><p>The  community mainly depends on farming and forest resources for their daily living. Many families practice kaingin or swidden farming, where they plant rice, corn, bananas, root crops, and other vegetables for food and income. However, poverty remains a major challenge because of limited access to education, healthcare, transportation, and stable livelihood opportunities. Climate change, droughts, and typhoons also affect their crops, making it difficult for families to earn enough to support their daily needs.
+                    Despite these hardships, the Hanunuo Mangyan continue to preserve their traditional way of life and deep connection with nature. Women in the community also contribute by making handicrafts and doing household work while helping in farming activities. Their sustainable farming practices show their respect for the environment, contrary to misconceptions that they destroy forests through kaingin. With proper government support, livelihood programs, and recognition of indigenous rights, the Hanunuo Mangyan community can improve their quality of life while preserving their cultural heritage.</p></div>
+            </div>
+        </section>
+
+        <section id="issues-reflection" class="section">
+            <div class="section-title">Issues Reflection</div>
+            <div class="section-divider"></div>
+            <p class="section-text">Learning about the issues faced by the Hanunuo Mangyan made me realize how difficult life can be for indigenous communities who continue to preserve their culture despite poverty, limited education, and lack of opportunities. Many Hanunuo Mangyan families live in remote areas where access to schools, healthcare, and transportation is limited. Because of these challenges, many children are unable to continue their studies, while families struggle to earn enough income for their daily needs.
+                I also realized that the Hanunuo Mangyan are often misunderstood by society. Some people look down on their traditional way of living without understanding the importance of their culture and practices. Despite this, they continue to protect their traditions, language, and environment. Their strong connection to nature and their simple way of life show discipline, resilience, and respect for their cultural identity. This made me appreciate the value of indigenous knowledge and traditions even more.
+                This topic taught me the importance of respecting and supporting indigenous communities instead of ignoring their struggles. The Hanunuo Mangyan are an important part of the cultural diversity of the Philippines, and they deserve equal opportunities and recognition. As students and members of society, we should help spread awareness about their situation and support programs that promote education, livelihood, and the preservation of indigenous culture for future generations.</p>
+        </section>
+
+        <section id="references" class="references fade-up">
+            <h2>References</h2>
+            <ul class="references-list">
+                <li><strong>Reference 01</strong> <a href="https://groupmindorawan.wordpress.com/2015/03/10/government-politics/#:~:text=Hanunoo%20Mangyan%20society%20is%20characterized,even%20of%20a%20jural%20sort." target="_blank" rel="noopener">groupmindorawan.wordpress.com/2015/03/10/government-politics</a></li>
+                <li><strong>Reference 02</strong> <a href="https://www.facebook.com/PHinEgypt/posts/-hanunuo-mangyan-true-pure-genuine-the-hanunuo-proudly-carry-a-name-that-means-t/1131051435878782/" target="_blank" rel="noopener">www.facebook.com/PHinEgypt/posts/-hanunuo-mangyan-true-pure-genuine-the-hanunuo-proudly-carry-a-name-that-means-t/1131051435878782/</a></li>
+                <li><strong>Reference 03</strong> <a href="https://www.hanunoo-mangyan.org/" target="_blank" rel="noopener">www.hanunoo-mangyan.org/</a></li>
+                <li><strong>Reference 04</strong> <a href="https://www.searca.org/pubs/abstracts-theses-dissertations/database/view?absid=135#:~:text=Results%20of%20the%20study%20showed,multistorey%20farming%2C%20and%20home%20gardens." target="_blank" rel="noopener">www.searca.org/pubs/abstracts-theses-dissertations/database/view?absid=135#:~:text=Results%20of%20the%20study%20showed,multistorey%20farming%2C%20and%20home%20gardens.</a></li>
+                <li><strong>Reference 05</strong> <a href="https://mangyan.org/content/hanunuo#:~:text=Community%20Structure%20and%20Social%20Values,on%20wisdom%20rather%20than%20coercion." target="_blank" rel="noopener">mangyan.org/content/hanunuo#:~:text=Community%20Structure%20and%20Social%20Values,on%20wisdom%20rather%20than%20coercion.</a></li>
+                <li><strong>Reference 06</strong> <a href="https://mangyan.org/galleries/images/8" target="_blank" rel="noopener">mangyan.org/galleries/images/8</a></li>
+                <li><strong>Reference 07</strong> <a href="https://www.endangeredalphabets.net/alphabets/hanunuo/" target="_blank" rel="noopener">www.endangeredalphabets.net/alphabets/hanunuo/</a></li>
+                <li><strong>Reference 08</strong> <a href="https://journals.sagepub.com/doi/10.1177/101053958800200405" target="_blank" rel="noopener">https://journals.sagepub.com/doi/10.1177/101053958800200405</a></li>
+                <li><strong>Reference 09</strong> <a href="https://share.google.com/nfll44SHmMs00VKZX" target="_blank" rel="noopener">https://share.google.com/nfll44SHmMs00VKZX</a></li>
+            </ul>
+            <p class="references-note">Indigenous voices matter — preserve, respect, and celebrate the Hanunó'o Mangyan heritage.</p>
+        </section>
+
+    
+    </div> <div class="signature fade-up">Sacred Roots • Living Tradition</div>
+        <div class="scroll-progress"><div class="progress-bar"></div></div>
+
+    <div class="modal" id="previewModal">
+        <div class="modal-close" id="modalClose">X</div>
+        <img id="modalImage" src="" alt="Preview">
+    </div>
+    <div class="card-detail-modal" id="cardDetailModal">
+        <div class="card-detail-panel">
+            <div class="modal-close" id="cardDetailClose">x</div>
+            <img class="card-detail-image" id="cardDetailImage" src="" alt="" />
+            <iframe class="card-detail-video" id="cardDetailVideo" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display: none; width: 100%; height: 420px; border-radius: 24px; margin-bottom: 1.5rem;"></iframe>
+            <div class="card-detail-title"></div>
+            <div class="card-detail-copy"></div>
+        </div>
+    </div>
+
+    <script>
+        const navbar = document.getElementById('navbar');
+        const progressBar = document.querySelector('.scroll-progress .progress-bar');
+        const parallaxItems = document.querySelectorAll('.parallax');
+
+        function updateScrollState() {
+            if (window.scrollY > 70) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled');
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+            if (progressBar) progressBar.style.height = `${Math.min(100, Math.max(0, scrollPercent))}%`;
+            parallaxItems.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const offsetValue = ((rect.top - window.innerHeight * 0.5) * 0.02).toFixed(2);
+                item.style.setProperty('--parallax', `${offsetValue}px`);
+            });
+        }
+
+        window.addEventListener('scroll', updateScrollState, { passive: true });
+        window.addEventListener('resize', updateScrollState);
+        updateScrollState();
+
+        const slides = document.querySelectorAll('.hero-slide .slide');
+        let heroIndex = 0;
+        function showHero(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+        }
+        setInterval(() => { heroIndex = (heroIndex + 1) % slides.length; showHero(heroIndex); }, 6000);
+
+        const fadeBlocks = document.querySelectorAll('.fade-up');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.2 });
+        fadeBlocks.forEach(block => observer.observe(block));
+
+        const cardDetailModal = document.getElementById('cardDetailModal');
+        const cardDetailTitle = cardDetailModal.querySelector('.card-detail-title');
+        const cardDetailCopy = cardDetailModal.querySelector('.card-detail-copy');
+        const cardDetailImage = document.getElementById('cardDetailImage');
+        const cardDetailVideo = document.getElementById('cardDetailVideo');
+        const cardDetailClose = document.getElementById('cardDetailClose');
+        const galleryItems = document.querySelectorAll('.masonry-item');
+        const modal = document.getElementById('previewModal');
+        const modalImage = document.getElementById('modalImage');
+
+        function getYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            try {
+                const parsed = new URL(url, window.location.href);
+                const host = parsed.hostname.replace('www.', '');
+                if (host === 'youtu.be') return `https://www.youtube.com/embed/${parsed.pathname.slice(1)}`;
+                if (host === 'youtube.com' || host === 'm.youtube.com' || host === 'youtube-nocookie.com') {
+                    if (parsed.pathname.startsWith('/embed/')) return url;
+                    const videoId = parsed.searchParams.get('v');
+                    if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+                }
+            } catch (error) {
+                return url;
+            }
+            return url;
+        }
+
+        function resetCardDetailMedia() {
+            cardDetailImage.style.display = 'none';
+            cardDetailVideo.style.display = 'none';
+            cardDetailVideo.src = '';
+        }
+
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const title = item.dataset.title || '';
+                const copy = item.dataset.copy || '';
+                const imageSrc = item.dataset.src || item.querySelector('img')?.src || '';
+                const videoSrc = getYouTubeEmbedUrl(item.dataset.video || '');
+
+                if (title) {
+                    cardDetailTitle.textContent = title;
+                    cardDetailCopy.textContent = copy;
+                    resetCardDetailMedia();
+                    if (videoSrc) {
+                        cardDetailVideo.src = videoSrc;
+                        cardDetailVideo.style.display = 'block';
+                    } else if (imageSrc) {
+                        cardDetailImage.src = imageSrc;
+                        cardDetailImage.alt = title;
+                        cardDetailImage.style.display = 'block';
+                    }
+                    cardDetailModal.classList.add('active');
+                } else {
+                    modalImage.src = imageSrc;
+                    modal.classList.add('active');
+                }
+            });
+        });
+        document.getElementById('modalClose').addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (event) => { if (event.target === modal) modal.classList.remove('active'); });
+
+        const clickCards = document.querySelectorAll('.social-card, .economy-card, .religion-card, .issue-card, .process-step, .timeline-item, .timeline-point, .data-viz-card');
+
+        clickCards.forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => {
+                let title = card.dataset.title || '';
+                let copy = card.dataset.copy || '';
+                let imageSrc = card.dataset.photo || '';
+                const titleEl = card.querySelector('h4, h5, h3');
+                const descEl = card.querySelector('p');
+                const imgEl = card.querySelector('img');
+                if (!title && titleEl) title = titleEl.textContent || '';
+                if (!copy && descEl) copy = descEl.textContent || '';
+                if (!imageSrc && imgEl) imageSrc = imgEl.src || '';
+                if (!title) return;
+                cardDetailTitle.textContent = title;
+                cardDetailCopy.textContent = copy;
+                cardDetailImage.style.display = 'none';
+                cardDetailVideo.style.display = 'none';
+                cardDetailVideo.src = '';
+                if (imageSrc) {
+                    cardDetailImage.src = imageSrc;
+                    cardDetailImage.alt = title;
+                    cardDetailImage.style.display = 'block';
+                }
+                cardDetailModal.classList.add('active');
+            });
+        });
+
+        cardDetailClose.addEventListener('click', () => {
+            cardDetailVideo.src = '';
+            cardDetailModal.classList.remove('active');
+        });
+        cardDetailModal.addEventListener('click', (event) => { if (event.target === cardDetailModal) { cardDetailVideo.src = ''; cardDetailModal.classList.remove('active'); } });
+
+    </script>
+</body>
+</html>
